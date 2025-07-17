@@ -1,12 +1,25 @@
 {
-  "buildCommand": "npx expo export --platform web",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "expo",
+  "framework": null,
   "installCommand": "npm install",
-  "devCommand": "npx expo start --web",
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
+  "devCommand": "npm run web",
+  "routes": [
+    {
+      "src": "/_expo/(.*)",
+      "dest": "/_expo/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
-  }
+  ]
 } 
