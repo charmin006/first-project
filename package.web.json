@@ -16,12 +16,6 @@
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "2.1.2",
     "expo": "~53.0.17",
-    "expo-camera": "^16.1.11",
-    "expo-file-system": "^18.1.11",
-    "expo-media-library": "^17.1.7",
-    "expo-notifications": "^0.31.4",
-    "expo-print": "^14.1.4",
-    "expo-sharing": "^13.1.5",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.5",
@@ -43,4 +37,4 @@
     "typescript": "~5.8.3"
   },
   "private": true
-}
+} 
