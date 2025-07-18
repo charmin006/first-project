@@ -1,4 +1,5 @@
 import { Transaction, DashboardData, CategoryBreakdown, SpendingInsight } from '../types';
+import { formatCurrency } from './currency';
 
 export const calculateDashboardData = (transactions: Transaction[]): DashboardData => {
   const today = new Date().toISOString().split('T')[0];
@@ -72,7 +73,7 @@ export const generateSpendingInsights = (transactions: Transaction[]): SpendingI
     insights.push({
       type: 'high_spending_day',
       title: 'High Spending Day',
-      description: `You spent $${amount.toFixed(2)} on ${formatDate(date)}`,
+      description: `You spent ${formatCurrency(amount)} on ${formatDate(date)}`,
       value: amount,
       date
     });
@@ -92,7 +93,7 @@ export const generateSpendingInsights = (transactions: Transaction[]): SpendingI
     insights.push({
       type: 'category_trend',
       title: 'Top Spending Category',
-      description: `${topCategory[0]} is your highest spending category at $${topCategory[1].toFixed(2)}`,
+      description: `${topCategory[0]} is your highest spending category at ${formatCurrency(topCategory[1])}`,
       value: topCategory[1]
     });
   }
@@ -105,7 +106,7 @@ export const generateSpendingInsights = (transactions: Transaction[]): SpendingI
     insights.push({
       type: 'savings_suggestion',
       title: 'Savings Opportunity',
-      description: `Consider reducing your monthly spending by 10% to save $${(avgMonthlySpending * 0.1).toFixed(2)} per month`,
+      description: `Consider reducing your monthly spending by 10% to save ${formatCurrency(avgMonthlySpending * 0.1)} per month`,
       value: avgMonthlySpending * 0.1
     });
   }

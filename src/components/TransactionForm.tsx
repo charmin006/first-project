@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Transaction, Category } from '../types';
 import { DEFAULT_CATEGORIES } from '../constants/categories';
+import { CURRENCY_SYMBOL } from '../utils/currency';
 
 interface TransactionFormProps {
   visible: boolean;
@@ -28,32 +29,41 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   transaction,
   categories = DEFAULT_CATEGORIES
 }) => {
+  const [title, setTitle] = useState(''); // ✅ Fixed: Added title field
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
+  const [type, setType] = useState<'expense' | 'income'>('expense'); // ✅ Fixed: Added transaction type
+  const [isNeed, setIsNeed] = useState(true); // ✅ Fixed: Added need vs want classification
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
   useEffect(() => {
     if (transaction) {
+      setTitle(transaction.title);
       setAmount(transaction.amount.toString());
       setCategory(transaction.category);
       setDate(transaction.date);
       setNote(transaction.note || '');
+      setType(transaction.type);
+      setIsNeed(transaction.isNeed);
     } else {
       resetForm();
     }
   }, [transaction, visible]);
 
   const resetForm = () => {
+    setTitle('');
     setAmount('');
     setCategory('');
     setDate(new Date().toISOString().split('T')[0]);
     setNote('');
+    setType('expense');
+    setIsNeed(true);
   };
 
   const handleSave = () => {
-    if (!amount || !category || !date) {
+    if (!title || !amount || !category || !date) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
@@ -65,10 +75,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     }
 
     const transactionData = {
+      title: title.trim(),
       amount: numAmount,
       category,
       date,
-      note: note.trim() || undefined
+      note: note.trim() || undefined,
+      type,
+      isNeed
     };
 
     onSave(transactionData);
@@ -98,18 +111,52 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         </View>
 
         <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
+          {/* Title Input */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>What did you spend on? *</Text>
+            <TextInput
+              style={styles.input}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="e.g., Groceries, Movie tickets, etc."
+              autoFocus
+            />
+          </View>
+
+          {/* Transaction Type */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Type *</Text>
+            <View style={styles.typeContainer}>
+              <TouchableOpacity
+                style={[styles.typeButton, type === 'expense' && styles.typeButtonActive]}
+                onPress={() => setType('expense')}
+              >
+                <Text style={[styles.typeButtonText, type === 'expense' && styles.typeButtonTextActive]}>
+                  Expense
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.typeButton, type === 'income' && styles.typeButtonActive]}
+                onPress={() => setType('income')}
+              >
+                <Text style={[styles.typeButtonText, type === 'income' && styles.typeButtonTextActive]}>
+                  Income
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* Amount Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Amount *</Text>
             <View style={styles.amountContainer}>
-              <Text style={styles.currencySymbol}>$</Text>
+              <Text style={styles.currencySymbol}>{CURRENCY_SYMBOL}</Text>
               <TextInput
                 style={styles.amountInput}
                 value={amount}
                 onChangeText={setAmount}
                 placeholder="0.00"
                 keyboardType="decimal-pad"
-                autoFocus
               />
             </View>
           </View>
@@ -137,6 +184,39 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               onChangeText={setDate}
               placeholder="YYYY-MM-DD"
             />
+          </View>
+
+          {/* Need vs Want Classification */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Classification *</Text>
+            <View style={styles.classificationContainer}>
+              <TouchableOpacity
+                style={[styles.classificationButton, isNeed && styles.classificationButtonActive]}
+                onPress={() => setIsNeed(true)}
+              >
+                <Ionicons 
+                  name="checkmark-circle" 
+                  size={20} 
+                  color={isNeed ? '#fff' : '#34C759'} 
+                />
+                <Text style={[styles.classificationText, isNeed && styles.classificationTextActive]}>
+                  Need
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.classificationButton, !isNeed && styles.classificationButtonActive]}
+                onPress={() => setIsNeed(false)}
+              >
+                <Ionicons 
+                  name="heart" 
+                  size={20} 
+                  color={!isNeed ? '#fff' : '#FF6B6B'} 
+                />
+                <Text style={[styles.classificationText, !isNeed && styles.classificationTextActive]}>
+                  Want
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Note Input */}
@@ -351,5 +431,60 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#333',
+  },
+  // ✅ Fixed: Added styles for transaction type buttons
+  typeContainer: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  typeButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    alignItems: 'center',
+  },
+  typeButtonActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  typeButtonText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '500',
+  },
+  typeButtonTextActive: {
+    color: '#fff',
+  },
+  // ✅ Fixed: Added styles for need vs want classification
+  classificationContainer: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  classificationButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    gap: 8,
+  },
+  classificationButtonActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  classificationText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '500',
+  },
+  classificationTextActive: {
+    color: '#fff',
   },
 }); 

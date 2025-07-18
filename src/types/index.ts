@@ -1,9 +1,12 @@
 export interface Transaction {
   id: string;
+  title: string; // ✅ Fixed: Added title field for transaction name
   amount: number;
   category: string;
   date: string;
   note?: string;
+  type: 'expense' | 'income'; // ✅ Fixed: Added transaction type
+  isNeed: boolean; // ✅ Fixed: Added need vs want classification
   createdAt: string;
 }
 

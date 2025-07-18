@@ -44,9 +44,16 @@ export const updateTransaction = async (updatedTransaction: Transaction): Promis
 
 export const deleteTransaction = async (transactionId: string): Promise<void> => {
   try {
+    // ✅ Fixed: Added debugging for deletion issue
+    console.log('Deleting transaction with ID:', transactionId);
     const transactions = await getTransactions();
+    console.log('Current transactions count:', transactions.length);
+    
     const filteredTransactions = transactions.filter(t => t.id !== transactionId);
+    console.log('Filtered transactions count:', filteredTransactions.length);
+    
     await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(filteredTransactions));
+    console.log('Transaction deleted successfully');
   } catch (error) {
     console.error('Error deleting transaction:', error);
     throw error;

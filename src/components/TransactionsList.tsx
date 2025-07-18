@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Transaction } from '../types';
 import { TransactionForm } from './TransactionForm';
+import { formatCurrency } from '../utils/currency';
 // AI FEATURE START
 import { ClassificationBadge } from './aiFeatures/ClassificationBadge';
 // AI FEATURE END
@@ -88,9 +89,7 @@ export const TransactionsList: React.FC<TransactionsListProps> = ({
     setShowForm(false);
   };
 
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
-  };
+  // ✅ Fixed: Using consistent Rupee formatting
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -105,12 +104,35 @@ export const TransactionsList: React.FC<TransactionsListProps> = ({
     <View style={styles.transactionCard}>
       <View style={styles.transactionHeader}>
         <View style={styles.transactionInfo}>
+          <Text style={styles.transactionTitle}>{item.title}</Text>
           <Text style={styles.transactionCategory}>{item.category}</Text>
           <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
+          {/* ✅ Fixed: Show need vs want classification */}
+          <View style={styles.classificationContainer}>
+            <View style={[
+              styles.classificationBadge, 
+              item.isNeed ? styles.needBadge : styles.wantBadge
+            ]}>
+              <Ionicons 
+                name={item.isNeed ? "checkmark-circle" : "heart"} 
+                size={12} 
+                color={item.isNeed ? "#34C759" : "#FF6B6B"} 
+              />
+              <Text style={[
+                styles.classificationText,
+                item.isNeed ? styles.needText : styles.wantText
+              ]}>
+                {item.isNeed ? 'Need' : 'Want'}
+              </Text>
+            </View>
+          </View>
         </View>
         <View style={styles.transactionAmountContainer}>
-          <Text style={styles.transactionAmount}>
-            {formatCurrency(item.amount)}
+          <Text style={[
+            styles.transactionAmount,
+            item.type === 'income' && styles.incomeAmount
+          ]}>
+            {item.type === 'income' ? '+' : '-'}{formatCurrency(item.amount)}
           </Text>
           {/* AI FEATURE START */}
           <ClassificationBadge transaction={item} />
@@ -389,5 +411,44 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  // ✅ Fixed: Added styles for transaction title and classification
+  transactionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  classificationContainer: {
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  classificationBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    gap: 4,
+  },
+  needBadge: {
+    backgroundColor: '#E8F5E8',
+  },
+  wantBadge: {
+    backgroundColor: '#FFE8E8',
+  },
+  classificationText: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  needText: {
+    color: '#34C759',
+  },
+  wantText: {
+    color: '#FF6B6B',
+  },
+  incomeAmount: {
+    color: '#34C759',
   },
 }); 

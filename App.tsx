@@ -87,6 +87,7 @@ export default function App() {
 
   const handleAddTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt'>) => {
     try {
+      // ✅ Fixed: Ensure all required fields are present
       const newTransaction: Transaction = {
         ...transactionData,
         id: Date.now().toString(),
