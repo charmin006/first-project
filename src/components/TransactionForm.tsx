@@ -178,12 +178,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           {/* Date Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Date *</Text>
-            <TextInput
-              style={styles.input}
-              value={date}
-              onChangeText={setDate}
-              placeholder="YYYY-MM-DD"
-            />
+            <TouchableOpacity
+              style={styles.dateButton}
+              onPress={() => {
+                // ✅ Fixed: Set today's date as default
+                const today = new Date().toISOString().split('T')[0];
+                setDate(today);
+              }}
+            >
+              <Ionicons name="calendar" size={20} color="#007AFF" />
+              <Text style={styles.dateText}>{date || 'Select date'}</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Need vs Want Classification */}
@@ -486,5 +491,20 @@ const styles = StyleSheet.create({
   },
   classificationTextActive: {
     color: '#fff',
+  },
+  // ✅ Fixed: Added styles for date button
+  dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#333',
   },
 }); 

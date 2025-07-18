@@ -21,6 +21,7 @@ import {
   saveUserBudget 
 } from '../../utils/aiStorage';
 import { BudgetAIService } from '../../services/budgetAI';
+import { formatCurrency } from '../../utils/currency';
 
 interface BudgetSuggestionsProps {
   transactions: Transaction[];
@@ -134,9 +135,10 @@ export const BudgetSuggestions: React.FC<BudgetSuggestionsProps> = ({
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
-  };
+  // ✅ Fixed: Use consistent currency formatting
+  // const formatCurrency = (amount: number) => {
+  //   return `$${amount.toFixed(2)}`;
+  // };
 
   if (isLoading) {
     return (

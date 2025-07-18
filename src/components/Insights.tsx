@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SpendingInsight } from '../types';
+import { formatCurrency } from '../utils/currency';
 
 interface InsightsProps {
   insights: SpendingInsight[];
@@ -40,9 +41,10 @@ export const Insights: React.FC<InsightsProps> = ({ insights }) => {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
-  };
+  // ✅ Fixed: Use consistent currency formatting
+  // const formatCurrency = (amount: number) => {
+  //   return `$${amount.toFixed(2)}`;
+  // };
 
   if (insights.length === 0) {
     return (

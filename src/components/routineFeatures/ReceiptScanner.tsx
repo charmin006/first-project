@@ -15,6 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { ReceiptScanData } from '../../types/routineFeatures';
 import { ocrService } from '../../services/ocrService';
+import { formatCurrency } from '../../utils/currency';
 
 interface ReceiptScannerProps {
   onClose: () => void;
@@ -194,7 +195,7 @@ export const ReceiptScannerComponent: React.FC<ReceiptScannerProps> = ({
             <View style={styles.dataRow}>
               <Text style={styles.dataLabel}>Amount:</Text>
               <Text style={styles.dataValue}>
-                {scanData.amount ? `$${scanData.amount.toFixed(2)}` : 'Not detected'}
+                {scanData.amount ? formatCurrency(scanData.amount) : 'Not detected'}
               </Text>
             </View>
             

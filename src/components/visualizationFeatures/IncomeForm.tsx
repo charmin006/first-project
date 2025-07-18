@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Income, IncomeCategory } from '../../types/visualizationFeatures';
+import { CURRENCY_SYMBOL } from '../../utils/currency';
 
 interface IncomeFormProps {
   onClose: () => void;
@@ -78,7 +79,7 @@ export const IncomeFormComponent: React.FC<IncomeFormProps> = ({ onClose, onSave
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Amount</Text>
           <View style={styles.amountInput}>
-            <Text style={styles.currencySymbol}>$</Text>
+            <Text style={styles.currencySymbol}>{CURRENCY_SYMBOL}</Text>
             <TextInput
               style={styles.amountTextInput}
               value={amount}
@@ -149,7 +150,7 @@ export const IncomeFormComponent: React.FC<IncomeFormProps> = ({ onClose, onSave
             <View style={styles.previewRow}>
               <Text style={styles.previewLabel}>Amount:</Text>
               <Text style={styles.previewValue}>
-                ${amount ? parseFloat(amount).toFixed(2) : '0.00'}
+                {CURRENCY_SYMBOL}{amount ? parseFloat(amount).toFixed(2) : '0.00'}
               </Text>
             </View>
             <View style={styles.previewRow}>

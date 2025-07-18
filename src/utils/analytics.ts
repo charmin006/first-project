@@ -5,12 +5,21 @@ export const calculateDashboardData = (transactions: Transaction[]): DashboardDa
   const today = new Date().toISOString().split('T')[0];
   const currentMonth = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
 
-  const dailyTotal = transactions
-    .filter(t => t.date === today)
+  // ✅ Fixed: Separate income and expenses for proper calculations
+  const dailyExpenses = transactions
+    .filter(t => t.date === today && t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const monthlyTotal = transactions
-    .filter(t => t.date.startsWith(currentMonth))
+  const dailyIncome = transactions
+    .filter(t => t.date === today && t.type === 'income')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const monthlyExpenses = transactions
+    .filter(t => t.date.startsWith(currentMonth) && t.type === 'expense')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const monthlyIncome = transactions
+    .filter(t => t.date.startsWith(currentMonth) && t.type === 'income')
     .reduce((sum, t) => sum + t.amount, 0);
 
   const categoryBreakdown = calculateCategoryBreakdown(transactions, currentMonth);
@@ -19,15 +28,17 @@ export const calculateDashboardData = (transactions: Transaction[]): DashboardDa
     .slice(0, 5);
 
   return {
-    dailyTotal,
-    monthlyTotal,
+    dailyTotal: dailyExpenses, // Show expenses as positive for display
+    monthlyTotal: monthlyExpenses, // Show expenses as positive for display
+    monthlyIncome: monthlyIncome, // ✅ Fixed: Added monthly income
     categoryBreakdown,
     recentTransactions
   };
 };
 
 export const calculateCategoryBreakdown = (transactions: Transaction[], period: string): CategoryBreakdown[] => {
-  const periodTransactions = transactions.filter(t => t.date.startsWith(period));
+  // ✅ Fixed: Only include expenses in category breakdown
+  const periodTransactions = transactions.filter(t => t.date.startsWith(period) && t.type === 'expense');
   const total = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
 
   const categoryMap = new Map<string, number>();
@@ -56,9 +67,17 @@ export const generateSpendingInsights = (transactions: Transaction[]): SpendingI
     return insights;
   }
 
+  // ✅ Fixed: Only analyze expenses for spending insights
+  const expenses = transactions.filter(t => t.type === 'expense');
+  const income = transactions.filter(t => t.type === 'income');
+
+  if (expenses.length === 0) {
+    return insights;
+  }
+
   // Find high spending days
   const dailySpending = new Map<string, number>();
-  transactions.forEach(t => {
+  expenses.forEach(t => {
     const current = dailySpending.get(t.date) || 0;
     dailySpending.set(t.date, current + t.amount);
   });
@@ -81,7 +100,7 @@ export const generateSpendingInsights = (transactions: Transaction[]): SpendingI
 
   // Category trends
   const categoryTotals = new Map<string, number>();
-  transactions.forEach(t => {
+  expenses.forEach(t => {
     const current = categoryTotals.get(t.category) || 0;
     categoryTotals.set(t.category, current + t.amount);
   });
@@ -98,9 +117,29 @@ export const generateSpendingInsights = (transactions: Transaction[]): SpendingI
     });
   }
 
+  // ✅ Fixed: Add income vs expense balance insight
+  const totalExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
+  const totalIncome = income.reduce((sum, t) => sum + t.amount, 0);
+  const balance = totalIncome - totalExpenses;
+
+  if (balance < 0) {
+    insights.push({
+      type: 'savings_suggestion',
+      title: 'Budget Alert',
+      description: `You're spending ${formatCurrency(Math.abs(balance))} more than you earn. Consider reducing expenses.`,
+      value: Math.abs(balance)
+    });
+  } else if (balance > 0) {
+    insights.push({
+      type: 'savings_suggestion',
+      title: 'Good Financial Health',
+      description: `You're saving ${formatCurrency(balance)} this month. Great job!`,
+      value: balance
+    });
+  }
+
   // Savings suggestions
-  const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
-  const avgMonthlySpending = totalSpent / Math.max(1, getMonthsBetween(transactions));
+  const avgMonthlySpending = totalExpenses / Math.max(1, getMonthsBetween(expenses));
   
   if (avgMonthlySpending > 1000) {
     insights.push({

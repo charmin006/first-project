@@ -45,6 +45,7 @@ export const TransactionsList: React.FC<TransactionsListProps> = ({
 
     if (searchQuery) {
       filtered = filtered.filter(t =>
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.amount.toString().includes(searchQuery)

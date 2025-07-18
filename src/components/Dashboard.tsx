@@ -84,6 +84,34 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </View>
       </View>
 
+      {/* ✅ Fixed: Add income vs expense summary */}
+      <View style={styles.balanceContainer}>
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceLabel}>Monthly Income</Text>
+          <Text style={styles.incomeAmount}>
+            +{formatCurrency(data.monthlyIncome || 0)}
+          </Text>
+        </View>
+        
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceLabel}>Monthly Expenses</Text>
+          <Text style={styles.expenseAmount}>
+            -{formatCurrency(data.monthlyTotal)}
+          </Text>
+        </View>
+        
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceLabel}>Balance</Text>
+          <Text style={[
+            styles.balanceAmount,
+            (data.monthlyIncome || 0) - data.monthlyTotal >= 0 ? styles.positiveBalance : styles.negativeBalance
+          ]}>
+            {(data.monthlyIncome || 0) - data.monthlyTotal >= 0 ? '+' : ''}
+            {formatCurrency((data.monthlyIncome || 0) - data.monthlyTotal)}
+          </Text>
+        </View>
+      </View>
+
       {/* Category Breakdown */}
       {data.categoryBreakdown.length > 0 && (
         <View style={styles.chartSection}>
@@ -192,7 +220,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Ionicons name="receipt-outline" size={48} color="#ccc" />
             <Text style={styles.emptyStateText}>No transactions yet</Text>
             <Text style={styles.emptyStateSubtext}>
-              Add your first expense to get started
+              Tap the + button to add your first transaction
             </Text>
           </View>
         )}
@@ -422,5 +450,45 @@ const styles = StyleSheet.create({
   },
   incomeAmount: {
     color: '#34C759',
+  },
+  // ✅ Fixed: Added styles for balance section
+  balanceContainer: {
+    flexDirection: 'row',
+    padding: 20,
+    gap: 10,
+  },
+  balanceCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  balanceLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  expenseAmount: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FF3B30',
+    textAlign: 'center',
+  },
+  balanceAmount: {
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  positiveBalance: {
+    color: '#34C759',
+  },
+  negativeBalance: {
+    color: '#FF3B30',
   },
 }); 

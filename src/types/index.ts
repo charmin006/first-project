@@ -20,6 +20,7 @@ export interface Category {
 export interface DashboardData {
   dailyTotal: number;
   monthlyTotal: number;
+  monthlyIncome: number; // ✅ Fixed: Added monthly income field
   categoryBreakdown: CategoryBreakdown[];
   recentTransactions: Transaction[];
 }

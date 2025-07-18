@@ -248,9 +248,10 @@ const getPeriodStartDate = (date: Date, period: 'week' | 'month' | 'year', offse
 
 // Format currency
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
+  // ✅ Fixed: Use Indian Rupee formatting
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
   }).format(amount);
 };
 
