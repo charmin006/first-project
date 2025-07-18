@@ -115,10 +115,13 @@ export const RoutineFeaturesScreen: React.FC<RoutineFeaturesScreenProps> = ({
             onDataExtracted={(data: ReceiptScanData) => {
               // Auto-fill transaction form with scanned data
               const transactionData = {
+                title: data.storeName || 'Scanned Receipt',
                 amount: data.amount || 0,
                 category: 'Food & Dining', // Default category
                 date: data.date || new Date().toISOString().split('T')[0],
                 note: data.storeName ? `Scanned from ${data.storeName}` : 'Scanned receipt',
+                type: 'expense' as const,
+                isNeed: true,
               };
               onAddTransaction(transactionData);
               setShowModal(false);
@@ -143,10 +146,13 @@ export const RoutineFeaturesScreen: React.FC<RoutineFeaturesScreenProps> = ({
             onTransactionDetected={(transaction: UPITransaction) => {
               // Convert UPI transaction to regular transaction
               const transactionData = {
+                title: `UPI: ${transaction.vendor}`,
                 amount: transaction.amount,
                 category: transaction.suggestedCategory || 'Food & Dining',
                 date: transaction.date,
                 note: `UPI: ${transaction.vendor} via ${transaction.source}`,
+                type: 'expense' as const,
+                isNeed: true,
               };
               onAddTransaction(transactionData);
               setShowModal(false);

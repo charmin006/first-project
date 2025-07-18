@@ -87,10 +87,13 @@ export const RecurringExpensesComponent: React.FC<RecurringExpensesProps> = ({
             // Simulate creating from last transaction
             const mockTransaction: Transaction = {
               id: 'mock_transaction',
+              title: 'Daily Coffee',
               amount: 25.00,
               category: 'Food & Dining',
               date: new Date().toISOString().split('T')[0],
               note: 'Daily coffee',
+              type: 'expense',
+              isNeed: false,
               createdAt: new Date().toISOString(),
             };
             onAddRecurring(mockTransaction, 'daily');
@@ -101,10 +104,13 @@ export const RecurringExpensesComponent: React.FC<RecurringExpensesProps> = ({
           onPress: () => {
             const mockTransaction: Transaction = {
               id: 'mock_transaction',
+              title: 'Weekly Gas',
               amount: 50.00,
               category: 'Transportation',
               date: new Date().toISOString().split('T')[0],
               note: 'Weekly gas',
+              type: 'expense',
+              isNeed: true,
               createdAt: new Date().toISOString(),
             };
             onAddRecurring(mockTransaction, 'weekly');
@@ -115,10 +121,13 @@ export const RecurringExpensesComponent: React.FC<RecurringExpensesProps> = ({
           onPress: () => {
             const mockTransaction: Transaction = {
               id: 'mock_transaction',
+              title: 'Monthly Subscription',
               amount: 100.00,
               category: 'Utilities',
               date: new Date().toISOString().split('T')[0],
               note: 'Monthly subscription',
+              type: 'expense',
+              isNeed: true,
               createdAt: new Date().toISOString(),
             };
             onAddRecurring(mockTransaction, 'monthly');
